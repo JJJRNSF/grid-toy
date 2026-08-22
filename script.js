@@ -26,6 +26,7 @@ if (Math.random() < INVERT_PROBABILITY) {
    cell.classes.add("black");
 }
      
+     
     // Handle both click and drag events
     cell.addEventListener('mousedown', () => {
       cell.classList.toggle('black');
