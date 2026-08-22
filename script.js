@@ -1,47 +1,55 @@
 const INVERT_PROBABILITY = 0.5
 
-// Track if mouse is being pressed
-let isMouseDown = false;
+// Track pointer (mouse/touch) state
+let isPointerDown = false;
 
-// Add mouse down/up listeners to document
-document.addEventListener('mousedown', () => isMouseDown = true);
-document.addEventListener('mouseup', () => isMouseDown = false);
+document.addEventListener('pointerdown', () => isPointerDown = true);
+document.addEventListener('pointerup', () => isPointerDown = false);
+document.addEventListener('pointercancel', () => isPointerDown = false);
+window.addEventListener('blur', () => isPointerDown = false);
 
-// Add click handler to create the grid
-document.addEventListener('DOMContentLoaded', () => {
+function createGrid(rows = 10, cols = 10) {
+  const grid = document.getElementById('grid');
+  if (!grid) return;
 
-   // Get references to our elements
-const startButton = document.getElementById('start');
-const grid = document.getElementById('grid');
-
-  // Clear any existing grid first
   grid.innerHTML = '';
 
-  // Create 100 cells (10x10)
-  for (let i = 0; i < 100; i++) {
+  const total = rows * cols;
+  for (let i = 0; i < total; i++) {
     const cell = document.createElement('div');
-    cell.className = 'cell';
+    cell.classList.add('cell');
 
-if (Math.random() < INVERT_PROBABILITY) {
-   cell.classes.add("black");
-}
-     
-     
-    // Handle both click and drag events
-    cell.addEventListener('mousedown', () => {
+    if (Math.random() < INVERT_PROBABILITY) {
+      cell.classList.add('black');
+    }
+
+    // Click toggles cell
+    cell.addEventListener('click', () => {
       cell.classList.toggle('black');
     });
 
-    cell.addEventListener('mouseenter', () => {
-      if (isMouseDown) {
+    // Drag (pointer-enter while pointer is down) toggles cell
+    cell.addEventListener('pointerenter', () => {
+      if (isPointerDown) {
         cell.classList.toggle('black');
       }
     });
 
     grid.appendChild(cell);
   }
+}
 
-  // Hide the start button after grid is created
-  startButton.style.display = 'none';
+document.addEventListener('DOMContentLoaded', () => {
+  const startButton = document.getElementById('start');
+
+  // If there's a start button, create the grid on click and then hide the button.
+  // Otherwise create it immediately.
+  if (startButton) {
+    startButton.addEventListener('click', () => {
+      createGrid();
+      startButton.style.display = 'none';
+    });
+  } else {
+    createGrid();
+  }
 });
-
